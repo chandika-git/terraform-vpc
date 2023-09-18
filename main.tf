@@ -42,4 +42,30 @@ resource "aws_subnet" "private" {
     Project = var.project_name,
     Env = var.project_env
   }
+
 }
+
+
+resource "aws_eip" "eip" {
+  domain   = "vpc"
+
+    tags = {
+    Name = "${var.project_name}-${var.project_env}-eip",
+    Project = var.project_name,
+    Env = var.project_env
+  }
+}
+
+resource "aws_nat_gateway" "nat-gw" {
+  allocation_id = aws_eip.eip.id
+  subnet_id     = aws_subnet.public[1].id
+
+    tags = {
+    Name = "${var.project_name}-${var.project_env}-nat-gw",
+    Project = var.project_name,
+    Env = var.project_env
+  }
+
+  depends_on = [aws_internet_gateway.igw]
+}
+
