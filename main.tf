@@ -186,3 +186,23 @@ resource "aws_security_group" "frontend" {
   }
 }
 
+
+resource "aws_security_group" "backend" {
+  name        = "${var.project_name}-${var.project_env}-backend"
+  description = "Allow only 3306 port from my ip"
+  vpc_id      = aws_vpc.vpc.id
+
+  ingress {
+    description      = "MySQL port"
+    from_port        = 3306
+    to_port          = 3306
+    protocol         = "tcp"
+    security_groups  = [ aws_security_group.frontend.id ]
+  }
+
+  tags = {
+    Name = "${var.project_name}-${var.project_env}-backend",
+    Project = var.project_name,
+    Env = var.project_env
+  }
+}
